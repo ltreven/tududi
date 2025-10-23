@@ -14,7 +14,44 @@ const VALID_FREQUENCIES = [
     '12h',
 ];
 
-// GET /api/profile
+/**
+ * @swagger
+ * /api/profile:
+ *   get:
+ *     summary: Retrieve the user's profile
+ *     description: Fetches the profile information of the currently authenticated user.
+ *     tags:
+ *       - Profile
+ *     responses:
+ *       200:
+ *         description: A user profile object.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uid:
+ *                   type: string
+ *                   description: The user's unique ID.
+ *                 email:
+ *                   type: string
+ *                   description: The user's email address.
+ *                 appearance:
+ *                   type: string
+ *                   description: The user's appearance preference.
+ *                 language:
+ *                   type: string
+ *                   description: The user's language preference.
+ *                 timezone:
+ *                   type: string
+ *                   description: The user's timezone.
+ *       401:
+ *         description: Authentication required.
+ *       404:
+ *         description: Profile not found.
+ *       500:
+ *         description: Internal server error.
+ */
 router.get('/profile', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {

@@ -88,6 +88,11 @@ if (config.production) {
 // Serve uploaded files
 app.use('/api/uploads', express.static(config.uploadPath));
 
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger.js');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
 const { logError } = require('./services/logService');
