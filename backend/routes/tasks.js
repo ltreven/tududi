@@ -1149,7 +1149,131 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     };
 }
 
-// GET /api/tasks
+/**
+ * @swagger
+ * /tasks:
+ *   get:
+ *     summary: Retrieve a list of tasks
+ *     description: Fetches a list of tasks, with optional filters.
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [today, upcoming, next, inbox, someday, waiting, all]
+ *         description: The type of tasks to retrieve.
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: Filter tasks by a specific tag.
+ *       - in: query
+ *         name: priority
+ *         schema:
+ *           type: string
+ *           enum: [urgent, high, medium, low, none]
+ *         description: Filter tasks by priority.
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [done, not_started, in_progress, waiting]
+ *         description: Filter tasks by status.
+ *       - in: query
+ *         name: order_by
+ *         schema:
+ *           type: string
+ *           enum: [created_at:asc, created_at:desc, updated_at:asc, updated_at:desc, name:asc, name:desc, priority:asc, priority:desc, status:asc, status:desc, due_date:asc, due_date:desc]
+ *         description: Sort tasks by a specific column and direction.
+ *       - in: query
+ *         name: groupBy
+ *         schema:
+ *           type: string
+ *           enum: [day]
+ *         description: Group tasks by day (only for 'upcoming' type).
+ *       - in: query
+ *         name: maxDays
+ *         schema:
+ *           type: integer
+ *         description: Maximum number of days to show for 'upcoming' view.
+ *       - in: query
+ *         name: client_side_filtering
+ *         schema:
+ *           type: boolean
+ *         description: If true, filtering is handled on the client side.
+ *       - in: query
+ *         name: include_instances
+ *         schema:
+ *           type: boolean
+ *         description: If true, includes recurring task instances.
+ *     responses:
+ *       200:
+ *         description: A list of tasks.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tasks:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *                 metrics:
+ *                   type: object
+ *                   properties:
+ *                     total_open_tasks:
+ *                       type: integer
+ *                     tasks_pending_over_month:
+ *                       type: integer
+ *                     tasks_in_progress_count:
+ *                       type: integer
+ *                     tasks_in_progress:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                     tasks_due_today:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                     today_plan_tasks:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                     suggested_tasks:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                     tasks_completed_today:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                     weekly_completions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           date:
+ *                             type: string
+ *                             format: date
+ *                           count:
+ *                             type: integer
+ *                           dayName:
+ *                             type: string
+ *                 groupedTasks:
+ *                   type: object
+ *                   additionalProperties:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/tasks', async (req, res) => {
     try {
         // Generate recurring tasks for upcoming view, but prevent concurrent execution
