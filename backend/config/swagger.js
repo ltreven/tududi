@@ -9,7 +9,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:3002',
+      url: process.env.BACKEND_URL || 'http://localhost:3002',
       description: 'Development server',
     },
   ],
